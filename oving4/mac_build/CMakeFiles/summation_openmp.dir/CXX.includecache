@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/Jorgenkg/Documents/Skole/TMA4280 Super Computers/oving4/summation_openmp.cpp
+iostream
+-
+vector
+-
+math.h
+-
+

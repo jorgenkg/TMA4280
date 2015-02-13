@@ -1,0 +1,1 @@
+/usr/local/bin/mpicxx    -openmp -Wl,-search_paths_first -Wl,-headerpad_max_install_names    CMakeFiles/summation_openmp.dir/summation_openmp.cpp.o  -o ../bin/summation_openmp  /usr/local/lib/libmpi.dylib 
