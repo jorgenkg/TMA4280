@@ -1,0 +1,74 @@
+\documentclass[a4paper]{article} %twocolumn
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\pagestyle{fancy}
+
+\title{TMA4280 Super Computers} 
+\author{Jakob Hovland\\Jørgen Grimnes\\Assignment 4}
+\date{Spring 2015}
+
+\lhead{Jakob Hovland Jørgen Grimnes\\Spring 2015}
+\rhead{TMA4280 Super Computers\\Assignment 4}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% downsize title
+%\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+
+
+\begin{document}
+	\maketitle
+   \pagebreak
+   
+   \section{Introduction}
+   This report presents a solution to homework project number four in TMA4280 Super Computers, spring 2015, at Norwegian University of Science and Technology. The assignment is a introduction to implementing efficient and parallel programs.
+   
+   \section{C++ program}
+   Please see the file \emph{summation.cpp}
+      
+   \section{OpenMP}
+   \subsubsection*{Do the necessary changes to utilize shared memory parallelization through
+OpenMP}
+   Please see the file \emph{summation openmp.cpp}
+   
+   \section{MPI program}
+   \subsubsection*{Write a program to compute the sum $S_n$ using P processors where P is a power of 2, and a distributed memory model (MPI)}
+   Please see the file \emph{summation mpi.cpp}.\\
+   Report the difference $S - S_n$ in double precision for different values of $n$.
+   
+   \section{OpenMP and MPI}
+   \subsubsection*{Confirm that your program also works when you are using OpenMP and MPI in combination}
+   Please see the file \emph{summation combined.cpp} for confirmation.
+   
+   \section{Which MPI calls are convenient/necessary to use?}
+
+\begin{table}[hbt]
+  \begin{center}
+    \begin{tabular}{|l|p{20em}| }
+      \hline
+      \textbf{Call} & \textbf{Description}\\
+      \hline
+      MPI::Init & Initializes the MPI execution environment\\ \hline
+      MPI::COMM\_WORLD.Get\_size & Returns the size of the group associated with COMM\_WORLD. \\ \hline
+      MPI::COMM\_WORLD.Get\_rank & Determines the rank of the calling process in COMM\_WORLD.\\ \hline
+      MPI::COMM\_WORLD.Bcast & Broadcasts a message from the process with rank root to all other processes of the group.\\ \hline
+      MPI::COMM\_WORLD.Reduce & Reduces values on all processes within COMM\_WORLD\\ \hline
+      MPI::Finalize & Terminates MPI execution environment. \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Non-Functional Requirements}
+\end{table}
+   
+\iffalse\begin{figure}[ht!]
+\center \includegraphics[width=280px]{plot.pdf}
+\end{figure}\fi
+
+\end{document}
