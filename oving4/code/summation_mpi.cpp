@@ -6,51 +6,65 @@
 int main(int argc, char **argv)
 {   
     double tot;
-    int n, myid, nproc, partSize;
+    int myid, nproc;
     
     MPI::Init(argc, argv);
     
     nproc = MPI::COMM_WORLD.Get_size ( );   // number of processes
     myid = MPI::COMM_WORLD.Get_rank ( );    // this process' ID
     
-    if (myid == 0){
-        n = pow(2, 20);
-        partSize = (int)(n / nproc);
-    }
     
-    MPI::COMM_WORLD.Bcast( &partSize, 1, MPI_INT, 0 );
+    //  This could be calculated on one process and seeded to the other processes,
+    //  but the broadcast of this value would be more costly than just calculating
+    //  it. 
+    int n = pow(2, 14);
+    int partSize = (int) (n / nproc);
+    //  
     
-    std::vector<double> myline( partSize );
+    // This structure will contain portion of the sequence we are responsible
+    // for summing up.
+    std::vector<double> digitVecor( partSize );
     
-    if (myid == 0){
-        for( int i=1; i<nproc; i++ ){
-            for( double y=i * partSize + 1; y<=(i+1) * partSize; y++){
-                myline[((int)y) % partSize - 1] = 1/(y*y);
-            }
-            
-            MPI::COMM_WORLD.Send( &myline[0], myline.size(), MPI_DOUBLE, i, 0 );
-        }
+    
+    if (myid == 0)
+    { // This is the master process
         
-        for( double y=1; y<partSize; y++){
-            myline[y-1] = 1/(y*y);
+        for( int i=1; i<nproc; i++ ){
+            // Loop over the slave processes and pass them a vector with digits to sum up.
+            // It would be faster to calculate the sequence directly on each individual process.
+            
+            for( double y=i * partSize + 1; y<=(i+1) * partSize; y++)
+                digitVecor[ ((int)y) % partSize - 1 ] = 1/(y*y);
+            
+            // Use MPI.Send to pass the vector
+            MPI::COMM_WORLD.Send( &digitVecor[0], digitVecor.size(), MPI_DOUBLE, i, 0 );
         }
+
+        // Create our own digit sequence
+        for( double y=1; y<=partSize; y++)
+            digitVecor[y-1] = 1/(y*y);
     }
-    else {
-        MPI::COMM_WORLD.Recv( &myline[0], myline.size(), MPI_DOUBLE, 0, 0 );
+    else 
+    { // This is a "slave" process.
+        
+        // Receive the initialized vector to sum up
+        MPI::COMM_WORLD.Recv( &digitVecor[0], digitVecor.size(), MPI_DOUBLE, 0, 0 );
     }
     
     
     // Do the calculation
     double sum = 0.0;
-    for( int j=0; j<myline.size(); j++ )
-        sum = sum + myline[j];
+    for( int j=0; j<digitVecor.size(); j++ )
+        sum = sum + digitVecor[j];
     
     
     // Collect the partial sums by reduction
     MPI::COMM_WORLD.Reduce (&sum, &tot, 1, MPI::DOUBLE, MPI::SUM, 0);
     
-    // Print the result from the main process
-    if (myid == 0) {
+    
+    if (myid == 0)
+    { // This is the master process
+        // Print the result
         double correctSum = M_PI * M_PI / (double) 6;
         std::cout << "[out] n: " << n << '\t' \
                   << "sum: " << tot << '\t' \
