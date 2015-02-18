@@ -1,14 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
-#include <omp.h>
 
 int main(int argc, char **argv)
 {   
     double tot, error;
     int k;
-    
-    omp_set_num_threads(4);
     
     double correctSum = M_PI * M_PI / (double) 6;
     std::vector<double> vec ( (int) pow(2, 14) );
@@ -28,8 +25,6 @@ int main(int argc, char **argv)
                   << "sum: " << tot << '\t' \
                   << "error: " << correctSum - tot << '\n';
     }
-        
-    
     
     return 0;
 }
