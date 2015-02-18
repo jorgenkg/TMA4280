@@ -20,9 +20,9 @@ int main(int argc, char **argv)
     for( int i=3; i<=14; i++){
         tot = 0;
         k = (int) pow(2, i);
-        #pragma omp parallel for schedule(static) reduction(+:tot)
+        
         for( int j=0; j<k; j++ )
-            tot += vec[j]; // replace this
+            tot += vec[j];
         
         std::cout << "k: " << k << '\t' \
                   << "sum: " << tot << '\t' \
