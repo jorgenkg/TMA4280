@@ -17,13 +17,13 @@ int main(int argc, char **argv)
     //  This could be calculated on one process and seeded to the other processes,
     //  but the broadcast of this value would be more costly than just calculating
     //  it. 
-    int n = pow(2, 14);
+    int n = pow(2, 20);
     int partSize = (int) (n / nproc);
     //  
     
     // This structure will contain portion of the sequence we are responsible
     // for summing up.
-    std::vector<double> digitVecor( partSize );
+    std::vector<double> digitVector( partSize );
     
     
     if (myid == 0)
@@ -34,28 +34,28 @@ int main(int argc, char **argv)
             // It would be faster to calculate the sequence directly on each individual process.
             
             for( double y=i * partSize + 1; y<=(i+1) * partSize; y++)
-                digitVecor[ ((int)y) % partSize - 1 ] = 1/(y*y);
+                digitVector[ ((int)y) % partSize - 1 ] = 1/(y*y);
             
             // Use MPI.Send to pass the vector
-            MPI::COMM_WORLD.Send( &digitVecor[0], digitVecor.size(), MPI_DOUBLE, i, 0 );
+            MPI::COMM_WORLD.Send( &digitVector[0], digitVector.size(), MPI_DOUBLE, i, 0 );
         }
 
         // Create our own digit sequence
         for( double y=1; y<=partSize; y++)
-            digitVecor[y-1] = 1/(y*y);
+            digitVector[y-1] = 1/(y*y);
     }
     else 
     { // This is a "slave" process.
         
         // Receive the initialized vector to sum up
-        MPI::COMM_WORLD.Recv( &digitVecor[0], digitVecor.size(), MPI_DOUBLE, 0, 0 );
+        MPI::COMM_WORLD.Recv( &digitVector[0], digitVector.size(), MPI_DOUBLE, 0, 0 );
     }
     
     
     // Do the calculation
     double sum = 0.0;
-    for( int j=0; j<digitVecor.size(); j++ )
-        sum = sum + digitVecor[j];
+    for( int j=0; j<digitVector.size(); j++ )
+        sum = sum + digitVector[j];
     
     
     // Collect the partial sums by reduction
